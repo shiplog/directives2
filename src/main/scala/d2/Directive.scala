@@ -112,7 +112,7 @@ case class Directive[-T, F[+_], +L, +R](run:HttpRequest[T] => F[Result[L, R]]){
 
 object Directives {
   def apply[F[+_]](implicit M:Monad[F]):Directives[F] = new Directives[F]{
-    protected implicit val F: Monad[F] = M
+    implicit val F: Monad[F] = M
   }
 }
 
