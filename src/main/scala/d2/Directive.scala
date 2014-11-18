@@ -89,10 +89,29 @@ object Directives {
 trait Directives[F[+_]] {
   protected implicit val F:Monad[F]
 
+  type Result[+L, +R] = d2.Result[L, R]
+  val Result          = d2.Result
+
+  type Directive[-T, +L, +R] = d2.Directive[T, F, L, R]
+
+  object Directive {
+    def apply[T, L, R](run:HttpRequest[T] => F[Result[L, R]]):Directive[T, L, R] = d2.Directive[T, F, L, R](run)
+
+    def result[L, R](result: Result[L, R]) = Directive[Any, L, R](_ => F.point(result))
+    def success[R](success: R) = result[Nothing, R](Result.Success(success))
+    def failure[L](failure: L) = result[L, Nothing](Result.Failure(failure))
+    def error[L](error: L)     = result[L, Nothing](Result.Error(error))
+
+    type Filter[+L] = d2.Directive.Filter[L]
+    val Filter      = d2.Directive.Filter
+  }
+
+  implicit def DirectiveMonad[T, L] = d2.Directive.monad[T, F, L]
+
   /* HttpRequest has to be of type Any because of type-inference (SLS 8.5) */
   case class when[R](f:PartialFunction[HttpRequest[Any], R]){
     def orElse[L](fail:L) =
-      request[Any].flatMap(r => if(f.isDefinedAt(r)) Directive.success[F, R](f(r)) else Directive.failure[F, L](fail))
+      request[Any].flatMap(r => if(f.isDefinedAt(r)) Directive.success(f(r)) else Directive.failure(fail))
   }
 
   object syntax {
@@ -103,7 +122,7 @@ trait Directives[F[+_]] {
   }
 
   object request {
-    def apply[T] = Directive[T, F, Nothing, HttpRequest[T]](req => F.point(Result.Success(req)))
+    def apply[T] = Directive[T, Nothing, HttpRequest[T]](req => F.point(Result.Success(req)))
 
     def underlying[T] = apply[T].map(_.underlying)
   }
