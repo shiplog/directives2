@@ -1,5 +1,9 @@
 name := "directives2"
 
+organization := "no.shiplog"
+
+version := "0.1-SNAPSHOT"
+
 scalaVersion := "2.11.4"
 
 libraryDependencies ++= Seq(
