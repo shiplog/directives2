@@ -65,7 +65,7 @@ object Directive {
   def error[F[+_] : Monad, L](error: => L) = result[F, L, Nothing](Result.Error(error))
 
   object commit {
-    def flatMap[T, F[+_], R, A](f:Unit => Directive[T, F, R, A]):Directive[T, F, R, A] =
+    def flatMap[T, F[+_]:Monad, R, A](f:Unit => Directive[T, F, R, A]):Directive[T, F, R, A] =
       commit(f(()))
 
     def apply[T, F[+_]:Monad, R, A](d:Directive[T, F, R, A]) = Directive[T, F, R, A]{ r => d.run(r).map{
