@@ -133,7 +133,12 @@ trait Directives[F[+_]] {
 
     type Filter[+L] = d2.Directive.Filter[L]
     val Filter      = d2.Directive.Filter
+
+    val commit = d2.Directive.commit
+
+    def value[L, R](f: F[Result[L, R]]) = apply(_ => f)
   }
+
 
   implicit def DirectiveMonad[T, L] = d2.Directive.monad[T, F, L]
 
