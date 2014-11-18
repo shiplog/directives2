@@ -140,7 +140,7 @@ trait Directives[F[+_]] {
 
   val commit = d2.Directive.commit
 
-  def value[L, R](f: F[Result[L, R]]) = Directive(_ => f)
+  def value[L, R](f: F[Result[L, R]]) = Directive[Any, L, R](_ => f)
   
   implicit def DirectiveMonad[T, L] = d2.Directive.monad[T, F, L]
 
