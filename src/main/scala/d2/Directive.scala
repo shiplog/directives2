@@ -117,7 +117,7 @@ object Directives {
 }
 
 trait Directives[F[+_]] {
-  protected implicit val F:Monad[F]
+  implicit val F:Monad[F]
 
   type Result[+L, +R] = d2.Result[L, R]
   val Result          = d2.Result
