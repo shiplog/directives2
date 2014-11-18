@@ -7,6 +7,14 @@ import syntax.monad._
 import scala.language.{higherKinds, implicitConversions}
 
 object Result {
+
+  def merge[A](result:Result[A, A]) = result match {
+    case Success(value) => value
+    case Failure(value) => value
+    case Error(value) => value
+
+  }
+
   case class Success[+A](value:A) extends Result[Nothing, A]
   case class Failure[+A](value:A) extends Result[A, Nothing]
   case class Error[+A](value:A) extends Result[A, Nothing]
@@ -38,6 +46,8 @@ sealed trait Result[+L, +R] {
     case Result.Failure(_)     => next
     case Result.Error(value)   => Result.Error(value)
   }
+
+  def map[B](f:R => B) = flatMap(r => Result.Success(f(r)))
 }
 
 object Directive {
@@ -65,7 +75,7 @@ case class Directive[-T, F[+_], +L, +R](run:HttpRequest[T] => F[Result[L, R]]){
       case Result.Error(value)   => F.point(Result.Error(value))
     })
 
-  def map[B](f:R => B)(implicit F:Monad[F]) = flatMap[T, L, B](r => Directive.point[F, B](f(r)))
+  def map[B](f:R => B)(implicit F:Functor[F]) = Directive[T, F, L, B](req => run(req).map(_.map(f)))
 
   def filter[LL >: L](f:R => Directive.Filter[LL])(implicit F:Monad[F]):Directive[T, F, LL, R] =
     flatMap{ r =>
@@ -78,6 +88,15 @@ case class Directive[-T, F[+_], +L, +R](run:HttpRequest[T] => F[Result[L, R]]){
 
   def withFilter[LL >: L](f:R => Directive.Filter[LL])(implicit F:Monad[F]) =
     filter(f)
+
+  def orElse[TT <: T, LL >: L, RR >: R](next:Directive[TT, F, LL, RR])(implicit F:Monad[F]) =
+    Directive[TT, F, LL, RR](req => run(req).flatMap{
+      case Result.Success(value) => Result.Success(value).point[F]
+      case Result.Failure(_)     => next.run(req)
+      case Result.Error(value)   => Result.Error(value).point[F]
+    })
+
+  def | [TT <: T, LL >: L, RR >: R](next:Directive[TT, F, LL, RR])(implicit F:Monad[F]) = orElse(next)
 }
 
 object Directives {
@@ -97,10 +116,10 @@ trait Directives[F[+_]] {
   object Directive {
     def apply[T, L, R](run:HttpRequest[T] => F[Result[L, R]]):Directive[T, L, R] = d2.Directive[T, F, L, R](run)
 
-    def result[L, R](result: Result[L, R]) = Directive[Any, L, R](_ => F.point(result))
-    def success[R](success: R) = result[Nothing, R](Result.Success(success))
-    def failure[L](failure: L) = result[L, Nothing](Result.Failure(failure))
-    def error[L](error: L)     = result[L, Nothing](Result.Error(error))
+    def result[L, R](result: Result[L, R]) = d2.Directive.result[F, L, R](result)
+    def success[R](success: R) = d2.Directive.success[F, R](success)
+    def failure[L](failure: L) = d2.Directive.failure[F, L](failure)
+    def error[L](error: L)     = d2.Directive.error[F, L](error)
 
     type Filter[+L] = d2.Directive.Filter[L]
     val Filter      = d2.Directive.Filter

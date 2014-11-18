@@ -18,7 +18,7 @@ class Demo {
 
   val x = for {
     r <- request // uten type annotation vil denne gi Directive[Any, ...]
-    a <- GET // implicit fra syntax._
+    a <- GET | POST // implicit fra syntax._
     o <- Option("").cata(Directive.success, Directive.failure(MethodNotAllowed)) // istedenfor gamle getOrElse directivet
     if r.method == "GET" | MethodNotAllowed // filter syntax
   } yield a
