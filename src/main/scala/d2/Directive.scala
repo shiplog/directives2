@@ -3,6 +3,7 @@ package d2
 import unfiltered.request.HttpRequest
 import scalaz._
 import syntax.monad._
+import syntax.std.option._
 
 import scala.language.{higherKinds, implicitConversions}
 
@@ -125,27 +126,29 @@ trait Directives[F[+_]] {
 
   object Directive {
     def apply[T, L, R](run:HttpRequest[T] => F[Result[L, R]]):Directive[T, L, R] = d2.Directive[T, F, L, R](run)
-
-    def result[L, R](result: Result[L, R]) = d2.Directive.result[F, L, R](result)
-    def success[R](success: R) = d2.Directive.success[F, R](success)
-    def failure[L](failure: L) = d2.Directive.failure[F, L](failure)
-    def error[L](error: L)     = d2.Directive.error[F, L](error)
-
-    type Filter[+L] = d2.Directive.Filter[L]
-    val Filter      = d2.Directive.Filter
   }
+
+  def result[L, R](result: Result[L, R]) = d2.Directive.result[F, L, R](result)
+  def success[R](success: R) = d2.Directive.success[F, R](success)
+  def failure[L](failure: L) = d2.Directive.failure[F, L](failure)
+  def error[L](error: L)     = d2.Directive.error[F, L](error)
+
+  def getOrElse[A, L](opt:Option[A], orElse: => L) = opt.cata(success, failure(orElse))
+
+  type Filter[+L] = d2.Directive.Filter[L]
+  val Filter      = d2.Directive.Filter
 
   implicit def DirectiveMonad[T, L] = d2.Directive.monad[T, F, L]
 
   /* HttpRequest has to be of type Any because of type-inference (SLS 8.5) */
   case class when[R](f:PartialFunction[HttpRequest[Any], R]){
-    def orElse[L](fail:L) =
-      request[Any].flatMap(r => if(f.isDefinedAt(r)) Directive.success(f(r)) else Directive.failure(fail))
+    def orElse[L](fail: => L) =
+      request[Any].flatMap(r => getOrElse(f.lift(r), fail))
   }
 
-  object syntax {
+  object ops {
     implicit class FilterSyntax(b:Boolean) {
-      def | [L](failure: => L) = Directive.Filter(b, () => failure)
+      def | [L](failure: => L) = Filter(b, () => failure)
     }
     implicit def MethodDirective(M:unfiltered.request.Method) = when{ case M(_) => M } orElse unfiltered.response.MethodNotAllowed
   }

@@ -13,18 +13,18 @@ class Demo {
 
   val D = d2.Directives[Option]
   import D._
-  import D.syntax._
+  import D.ops._
 
 
   val x = for {
     r <- request // uten type annotation vil denne gi Directive[Any, ...]
-    a <- xGet | Directive.failure(MethodNotAllowed) // implicit fra syntax._
-    o <- Option("").cata(Directive.success, Directive.failure(MethodNotAllowed)) // istedenfor gamle getOrElse directivet
+    a <- xGet | failure(MethodNotAllowed) // implicit fra syntax._
+    o <- getOrElse(Option(""), MethodNotAllowed)
     if r.method == "GET" | MethodNotAllowed // filter syntax
   } yield a
 
-  val xGet = for {
+  def xGet = for {
     _ <- GET
-    r <- Directive.failure(BadRequest) | Directive.failure(Unauthorized)
+    r <- failure(BadRequest) | failure(Unauthorized)
   } yield r
 }
