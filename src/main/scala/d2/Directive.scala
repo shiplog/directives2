@@ -64,6 +64,16 @@ object Directive {
   def failure[F[+_] : Monad, L](failure: => L) = result[F, L, Nothing](Result.Failure(failure))
   def error[F[+_] : Monad, L](error: => L) = result[F, L, Nothing](Result.Error(error))
 
+  object commit {
+    def flatMap[T, F[+_], R, A](f:Unit => Directive[T, F, R, A]):Directive[T, F, R, A] =
+      commit(f(()))
+
+    def apply[T, F[+_]:Monad, R, A](d:Directive[T, F, R, A]) = Directive[T, F, R, A]{ r => d.run(r).map{
+      case Result.Failure(response) => Result.Error[R](response)
+      case result                   => result
+    }}
+  }
+
   case class Filter[+L](result:Boolean, failure: () => L)
 }
 
