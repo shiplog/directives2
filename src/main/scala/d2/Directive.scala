@@ -133,7 +133,9 @@ trait Directives[F[+_]] {
   def failure[L](failure: L) = d2.Directive.failure[F, L](failure)
   def error[L](error: L)     = d2.Directive.error[F, L](error)
 
-  def getOrElse[A, L](opt:Option[A], orElse: => L) = opt.cata(success, failure(orElse))
+  def getOrElse[L, R](opt:F[Option[R]], orElse: => L) = d2.Directive[Any, F, L, R] { _ =>
+    opt.map(_.cata( r => Result.Success(r), Result.Failure(orElse)))
+  }
 
   type Filter[+L] = d2.Directive.Filter[L]
   val Filter      = d2.Directive.Filter
@@ -147,7 +149,7 @@ trait Directives[F[+_]] {
   /* HttpRequest has to be of type Any because of type-inference (SLS 8.5) */
   case class when[R](f:PartialFunction[HttpRequest[Any], R]){
     def orElse[L](fail: => L) =
-      request[Any].flatMap(r => getOrElse(f.lift(r), fail))
+      request[Any].flatMap(r => f.lift(r).cata(success, failure(fail)))
   }
 
   object ops {

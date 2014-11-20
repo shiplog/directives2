@@ -19,7 +19,7 @@ class Demo {
   val x = for {
     r <- request // uten type annotation vil denne gi Directive[Any, ...]
     a <- xGet | failure(MethodNotAllowed) // implicit fra syntax._
-    o <- getOrElse(Option(""), MethodNotAllowed)
+    o <- getOrElse(Option(Option("")), MethodNotAllowed)
     if r.method == "GET" | MethodNotAllowed // filter syntax
   } yield a
 
