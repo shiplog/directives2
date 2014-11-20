@@ -134,7 +134,7 @@ trait Directives[F[+_]] {
   def error[L](error: L)     = d2.Directive.error[F, L](error)
 
   def getOrElse[L, R](opt:F[Option[R]], orElse: => L) = d2.Directive[Any, F, L, R] { _ =>
-    opt.map(_.cata( r => Result.Success(r), Result.Failure(orElse)))
+    opt.map(_.cata(Result.Success(_), Result.Failure(orElse)))
   }
 
   type Filter[+L] = d2.Directive.Filter[L]
