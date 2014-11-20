@@ -133,9 +133,11 @@ trait Directives[F[+_]] {
   def failure[L](failure: L) = d2.Directive.failure[F, L](failure)
   def error[L](error: L)     = d2.Directive.error[F, L](error)
 
-  def getOrElse[L, R](opt:F[Option[R]], orElse: => L) = d2.Directive[Any, F, L, R] { _ =>
+  def getOrElseF[L, R](opt:F[Option[R]], orElse: => L) = d2.Directive[Any, F, L, R] { _ =>
     opt.map(_.cata(Result.Success(_), Result.Failure(orElse)))
   }
+
+  def getOrElse[A, L](opt:Option[A], orElse: => L) = opt.cata(success, failure(orElse))
 
   type Filter[+L] = d2.Directive.Filter[L]
   val Filter      = d2.Directive.Filter
