@@ -15,11 +15,11 @@ class Demo {
   import D._
   import D.ops._
 
-
   val x = for {
     r <- request // uten type annotation vil denne gi Directive[Any, ...]
     a <- xGet | failure(MethodNotAllowed) // implicit fra syntax._
-    o <- getOrElse(Option(Option("")), MethodNotAllowed)
+    o <- getOrElseF(Option(Option("")), MethodNotAllowed) // getOrElse on value
+    c <- Option("").successValue // decorate with directive
     if r.method == "GET" | MethodNotAllowed // filter syntax
   } yield a
 

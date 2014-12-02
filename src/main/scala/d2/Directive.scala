@@ -158,7 +158,14 @@ trait Directives[F[+_]] {
     implicit class FilterSyntax(b:Boolean) {
       def | [L](failure: => L) = Filter(b, () => failure)
     }
+
     implicit def MethodDirective(M:unfiltered.request.Method) = when{ case M(_) => M } orElse unfiltered.response.MethodNotAllowed
+
+    implicit class MonadDecorator[+X](f: F[X]) {
+      def successValue = d2.Directive[Any, F, Nothing, X](_ => f.map(Result.Success(_)))
+      def failureValue = d2.Directive[Any, F, X, Nothing](_ => f.map(Result.Failure(_)))
+      def errorValue   = d2.Directive[Any, F, X, Nothing](_ => f.map(Result.Error(_)))
+    }
   }
 
   object request {
