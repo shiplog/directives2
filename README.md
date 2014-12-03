@@ -15,9 +15,11 @@ new unfiltered.filter.async.Plan {
   }
 }
 
-val DFuture = Directives[Future] // scalaz.Monad
+val DFuture = Directives[Future]
 import DFuture._
 import ops._
+import scalaz._
+import std.scalaFuture._
 
 def someFutureResponse: Future[String] = ???
 
