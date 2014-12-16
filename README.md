@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.org/shiplog/d2.svg)](https://travis-ci.org/shiplog/d2)
-
 d2
 ==
 ``Directive[-T, F[+_], +L, +R]`` defined for ``scalaz.Monad[F]`` where ``Result[+L, +R]``
