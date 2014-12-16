@@ -28,3 +28,5 @@ def handleFoo = for {
   res <- someFutureResponse.valueSuccess
 } yield Ok ~> ResponseString(res)
 ```
+[![Build Status](https://travis-ci.org/shiplog/d2.svg)](https://travis-ci.org/shiplog/d2)
+
