@@ -2,7 +2,7 @@ d2
 ==
 ``Directive[-T, F[+_], +L, +R]`` defined for ``scalaz.Monad[F]`` where ``Result[+L, +R]``
 
-[![Build Status](https://travis-ci.org/shiplog/d2.svg)](https://travis-ci.org/shiplog/d2)
+[![Build Status](https://travis-ci.org/shiplog/directives2.svg)](https://travis-ci.org/shiplog/directives2)
 
 Directives2 is cross-compiled for 2.10 and 2.11 and the only dependencies are scalaz-core and unfiltered.
 
