@@ -11,16 +11,6 @@ libraryDependencies ++= Seq(
   "net.databinder" %% "unfiltered" % "0.8.3"
 )
 
-licenses := Seq(
-  "MIT" -> url("https://github.com/shiplog/d2/blob/master/LICENSE.md")
-)
+crossScalaVersions := Seq("2.10.4", "2.11.4")
 
-publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (isSnapshot.value)
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-}
-
-useGpg := true
+javacOptions ++= Seq("-source", "1.7", "-target", "1.7")

@@ -1,13 +1,13 @@
+import sbt.Keys._
+
 aetherPublishSettings
 
-val nexusRepos = "http://dev.shiplog.no:8080/nexus/content/repositories"
-
-publishTo <<= version apply {
-  (v: String) => if (v.trim().endsWith("SNAPSHOT")) {
-    Some("Shiplog Snapshots" at nexusRepos + "/snapshots/")
-  } else {
-    Some("Shiplog Releases" at nexusRepos + "/releases/")
-  }
+publishTo := {
+  val nexus = "https://oss.sonatype.org/"
+  if (isSnapshot.value)
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
 }
 
 pomIncludeRepository := { x => false }
@@ -30,11 +30,21 @@ packageOptions <+= (name, version, organization) map {
 
 credentials += Credentials(Path.userHome / ".sbt" / ".credentials")
 
-homepage := Some(new URL("http://github.com/shiplog/d2"))
+homepage := Some(url("http://github.com/shiplog/d2"))
 
 startYear := Some(2014)
 
-licenses := Seq(("Apache 2", new URL("http://www.apache.org/licenses/LICENSE-2.0.txt")))
+licenses := Seq(
+  "MIT" -> url("https://github.com/shiplog/d2/blob/master/LICENSE.md")
+)
+
+publishMavenStyle := true
+
+publishArtifact in Test := false
+
+pomIncludeRepository := { _ => false }
+
+useGpg := true
 
 pomExtra <<= (pomExtra, name, description) {(pom, name, desc) => pom ++ xml.Group(
   <scm>
@@ -44,12 +54,12 @@ pomExtra <<= (pomExtra, name, description) {(pom, name, desc) => pom ++ xml.Grou
   </scm>
   <developers>
     <developer>
-      <id>teigen</id>
-      <name>Jon Anders Teigen</name>
-    </developer>
-    <developer>
       <id>kareblak</id>
       <name>Kåre Blakstad</name>
+    </developer>
+    <developer>
+      <id>teigen</id>
+      <name>Jon Anders Teigen</name>
     </developer>
   </developers>
 )}
