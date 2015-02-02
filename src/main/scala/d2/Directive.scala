@@ -5,7 +5,7 @@ import scalaz._
 import syntax.monad._
 import syntax.std.option._
 
-import scala.language.{higherKinds, implicitConversions}
+import scala.language.{higherKinds, implicitConversions, reflectiveCalls}
 
 object Result {
 
@@ -166,6 +166,10 @@ trait Directives[F[+_]] {
       def failureValue = d2.Directive[Any, F, X, Nothing](_ => f.map(Result.Failure(_)))
       def errorValue   = d2.Directive[Any, F, X, Nothing](_ => f.map(Result.Error(_)))
     }
+  }
+
+  object implicits {
+    implicit def wrapSuccess[S](f: F[S]): d2.Directive[Any, F, Nothing, S] = ops.MonadDecorator(f).successValue
   }
 
   object request {

@@ -14,17 +14,15 @@ class Demo {
   val D = d2.Directives[Option]
   import D._
   import D.ops._
+  import D.implicits._
 
-  val x = for {
-    r <- request // uten type annotation vil denne gi Directive[Any, ...]
-    a <- xGet | failure(MethodNotAllowed) // implicit fra syntax._
-    o <- getOrElseF(Option(Option("")), MethodNotAllowed) // getOrElse on value
-    c <- Option("").successValue // decorate with directive
-    if r.method == "GET" | MethodNotAllowed // filter syntax
-  } yield a
+  val x: d2.Directive[Any, Option, Status, (String, String)] = for {
+    r <- request // will give Directive[Any, ..] without HttpRequest-like type annotation
+    a <- GET | POST // orElse operator. Will run second predicate if any failures (not errors) is rolled up from below. Will result in MethodNotAllowed if not committed.
+    _ <- commit // commit after a combinator to prevent any failures rolling up resulting in a MethodNotAllowed
+    o <- getOrElseF(Option(Option("")), MethodNotAllowed) // getOrElse on value. (Option-specific)
+    f <- Option("foo").successValue // decorate with directive
+    b <- Option("bar") // implicitly decorated by a Success projection from implicits._
+  } yield f -> b
 
-  def xGet = for {
-    _ <- GET
-    r <- failure(BadRequest) | failure(Unauthorized)
-  } yield r
 }
