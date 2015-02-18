@@ -6,7 +6,7 @@ d2
 
 Directives2 is cross-compiled for 2.10 and 2.11 and the only dependencies are scalaz-core and unfiltered.
 
-scala.concurrent.Future
+Example using scala.concurrent.Future
 ---
 ```scala
 val MappedAsyncIntent = d2.Async.Mapping[Any, String] {
