@@ -6,6 +6,14 @@ d2
 
 Directives2 is cross-compiled for 2.10 and 2.11 and the only dependencies are scalaz-core and unfiltered.
 
+To include in your project:
+
+``libraryDependencies += "no.shiplog" %% "directives2" % "0.9.2"``
+
+For backwards compatibility, there are implicits converting from ``unfiltered.directives.Directive`` to ``directives2.Directive``. Therefore, we added a dependency to:
+
+``libraryDependencies += "net.databinder" %% "unfiltered-directives" % "0.8.4" % "optional"``
+
 Example using scala.concurrent.Future
 ---
 ```scala
