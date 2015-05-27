@@ -61,5 +61,9 @@ pomExtra <<= (pomExtra, name, description) {(pom, name, desc) => pom ++ xml.Grou
       <id>teigen</id>
       <name>Jon Anders Teigen</name>
     </developer>
+    <developer>
+      <id>hamnis</id>
+      <name>Erlend Hamnaberg</name>
+    </developer>
   </developers>
 )}
