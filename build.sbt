@@ -8,7 +8,8 @@ scalaVersion := "2.11.5"
 
 libraryDependencies ++= Seq(
   "org.scalaz" %% "scalaz-core" % "7.1.0",
-  "net.databinder" %% "unfiltered" % "0.8.3"
+  "net.databinder" %% "unfiltered" % "0.8.3",
+  "net.databinder" %% "unfiltered-directives" % "0.8.3" % "optional"
 )
 
 crossScalaVersions := Seq("2.10.4", "2.11.5")
