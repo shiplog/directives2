@@ -2,7 +2,7 @@ name := "directives2"
 
 organization := "no.shiplog"
 
-version := "0.9.1"
+version := "0.9.2"
 
 scalaVersion := "2.11.6"
 

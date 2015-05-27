@@ -28,7 +28,7 @@ packageOptions <+= (name, version, organization) map {
     )
 }
 
-credentials += Credentials(Path.userHome / ".sbt" / ".credentials")
+credentials += Credentials(Path.userHome / ".sbt" / ".sonatype-credentials")
 
 homepage := Some(url("http://github.com/shiplog/d2"))
 
