@@ -155,6 +155,8 @@ trait Directives[F[+_]] {
   }
 
   object ops {
+    import unfiltered.request._
+
     implicit class FilterSyntax(b:Boolean) {
       def | [L](failure: => L) = Filter(b, () => failure)
     }
@@ -165,6 +167,29 @@ trait Directives[F[+_]] {
       def successValue = d2.Directive[Any, F, Nothing, X](_ => f.map(Result.Success(_)))
       def failureValue = d2.Directive[Any, F, X, Nothing](_ => f.map(Result.Failure(_)))
       def errorValue   = d2.Directive[Any, F, X, Nothing](_ => f.map(Result.Error(_)))
+    }
+
+    implicit def queryParamsDirective[A, L](t: QueryParams.type): d2.Directive[A, F, L, Map[String, Seq[String]]] = {
+      request[A].map{case QueryParams(qp) => qp}
+    }
+
+    implicit def stringHeaderDirective[A, L](Header: StringHeader): d2.Directive[A, F, L, Option[String]] = {
+      request[A].map{
+        case Header(v) => Some(v)
+        case _ => None
+      }
+    }
+
+    implicit def fromUnfilteredDirective[T, L, R](d1: unfiltered.directives.Directive[T, L, R]): d2.Directive[T, F, L, R] = {
+      import unfiltered.directives.{Result => Res}
+      Directive{ r =>
+        val res = d1(r)
+        res match {
+          case Res.Success(s) => F.point(Result.Success(s))
+          case Res.Failure(e) => F.point(Result.Failure(e))
+          case Res.Error(e) => F.point(Result.Error(e))
+        }
+      }
     }
   }
 
