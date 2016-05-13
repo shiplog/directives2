@@ -145,7 +145,7 @@ trait Directives[F[+_]] {
   val commit = d2.Directive.commit
 
   def value[L, R](f: F[Result[L, R]]) = Directive[Any, L, R](_ => f)
-  
+
   implicit def DirectiveMonad[T, L] = d2.Directive.monad[T, F, L]
 
   /* HttpRequest has to be of type Any because of type-inference (SLS 8.5) */
@@ -177,18 +177,6 @@ trait Directives[F[+_]] {
       request[A].map{
         case Header(v) => Some(v)
         case _ => None
-      }
-    }
-
-    implicit def fromUnfilteredDirective[T, L, R](d1: unfiltered.directives.Directive[T, L, R]): d2.Directive[T, F, L, R] = {
-      import unfiltered.directives.{Result => Res}
-      Directive{ r =>
-        val res = d1(r)
-        res match {
-          case Res.Success(s) => F.point(Result.Success(s))
-          case Res.Failure(e) => F.point(Result.Failure(e))
-          case Res.Error(e) => F.point(Result.Error(e))
-        }
       }
     }
   }
