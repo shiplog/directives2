@@ -4,11 +4,11 @@ d2
 
 [![Build Status](https://travis-ci.org/shiplog/directives2.svg)](https://travis-ci.org/shiplog/directives2)
 
-Directives2 is cross-compiled for 2.10 and 2.11 and the only dependencies are scalaz-core and unfiltered.
+Directives2 is cross-compiled for 2.10, 2.11 and 2.12 and the only dependencies are scalaz-core and unfiltered.
 
 To include in your project:
 
-``libraryDependencies += "no.shiplog" %% "directives2" % "0.9.2"``
+``libraryDependencies += "ws.unfiltered" %% "unfiltered" % "0.9.0-beta2"``
 
 For backwards compatibility, there are implicits converting from ``unfiltered.directives.Directive`` to ``directives2.Directive``. Therefore, we added a dependency to:
 
