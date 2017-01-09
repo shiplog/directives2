@@ -1,4 +1,4 @@
-d2
+Unfiltered Directives 2
 ==
 ``Directive[-T, F[+_], +L, +R]`` defined for ``scalaz.Monad[F]`` where ``Result[+L, +R]``
 
@@ -8,11 +8,11 @@ Directives2 is cross-compiled for 2.10, 2.11 and 2.12 and the only dependencies 
 
 To include in your project:
 
-``libraryDependencies += "ws.unfiltered" %% "unfiltered" % "0.9.0-beta2"``
+``libraryDependencies += "no.shiplog" %% "directives2" % "0.10.0"``
 
-For backwards compatibility, there are implicits converting from ``unfiltered.directives.Directive`` to ``directives2.Directive``. Therefore, we added a dependency to:
+For backwards compatibility, there are implicits converting from ``unfiltered.directives.Directive`` to ``d2.Directive``. Therefore, we added a dependency to:
 
-``libraryDependencies += "net.databinder" %% "unfiltered-directives" % "0.8.4" % "optional"``
+``libraryDependencies += "ws.unfiltered" %% "unfiltered-directives" % "0.9.0-beta2" % "optional"``
 
 Example using scala.concurrent.Future
 ---
@@ -22,7 +22,7 @@ val MappedAsyncIntent = d2.Async.Mapping[Any, String] {
 }
 
 new unfiltered.filter.async.Plan {
-  val intent = MappedAsyncIntent { 
+  val intent = MappedAsyncIntent {
     case "/foo" => handleFoo
   }
 }
