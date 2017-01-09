@@ -49,6 +49,8 @@ useGpg := true
 
 releaseCrossBuild := true
 
+releasePublishArtifactsAction := PgpKeys.publishSigned.value
+
 pomExtra <<= (pomExtra, name, description) {(pom, name, desc) => pom ++ xml.Group(
   <scm>
     <url>http://github.com/shiplog/d2</url>
