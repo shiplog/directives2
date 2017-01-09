@@ -1,4 +1,5 @@
 import sbt.Keys._
+import sbtrelease.ReleasePlugin.autoImport._
 
 aetherPublishSettings
 
@@ -45,6 +46,8 @@ publishArtifact in Test := false
 pomIncludeRepository := { _ => false }
 
 useGpg := true
+
+releaseCrossBuild := true
 
 pomExtra <<= (pomExtra, name, description) {(pom, name, desc) => pom ++ xml.Group(
   <scm>
