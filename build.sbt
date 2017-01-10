@@ -3,7 +3,7 @@ name := "directives2"
 organization := "no.shiplog"
 
 libraryDependencies ++= Seq(
-  "org.scalaz" %% "scalaz-core" % "7.1.11",
+  "org.scalaz" %% "scalaz-core" % "7.2.8",
   "ws.unfiltered" %% "unfiltered" % "0.9.0-beta2",
   "ws.unfiltered" %% "unfiltered-directives" % "0.9.0-beta2" % "optional"
 )
