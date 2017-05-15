@@ -3,13 +3,16 @@ import sbtrelease.ReleasePlugin.autoImport._
 
 aetherPublishSettings
 
+val nexusRepos = "https://shiplog.jfrog.io/shiplog/"
+
 publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (isSnapshot.value)
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+  if (isSnapshot.value) {
+    Some("Shiplog Snapshots" at nexusRepos + "libs-snapshot-local/")
+  } else {
+    Some("Shiplog Releases" at nexusRepos + "libs-release-local/")
+  }
 }
+
 
 pomIncludeRepository := { x => false }
 
@@ -29,7 +32,10 @@ packageOptions <+= (name, version, organization) map {
     )
 }
 
-credentials += Credentials(Path.userHome / ".sbt" / ".sonatype-credentials")
+credentials ++= Seq(
+  Credentials(Path.userHome / ".sbt" / ".sonatype-credentials"),
+  Credentials(Path.userHome / ".sbt" / "artifactory.credentials")
+)
 
 homepage := Some(url("http://github.com/shiplog/d2"))
 
@@ -47,7 +53,7 @@ pomIncludeRepository := { _ => false }
 
 releaseCrossBuild := true
 
-releasePublishArtifactsAction := PgpKeys.publishSigned.value
+//releasePublishArtifactsAction := PgpKeys.publishSigned.value
 
 pomExtra <<= (pomExtra, name, description) {(pom, name, desc) => pom ++ xml.Group(
   <scm>
