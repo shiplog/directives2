@@ -1,13 +1,9 @@
-package d3
+package d2
 
 import unfiltered.request._
 import unfiltered.response._
 
-import scalaz._
-import std.option._
-import syntax.monad._
-import syntax.std.option._
-
+import cats.implicits._
 
 class Demo {
 
