@@ -1,7 +1,5 @@
-import sbt.Keys._
-import sbtrelease.ReleasePlugin.autoImport._
-
-aetherPublishSettings
+overridePublishBothSettings
+overridePublishSignedSettings
 
 val nexusRepos = "https://shiplog.jfrog.io/shiplog/"
 
@@ -16,20 +14,23 @@ publishTo := {
 
 pomIncludeRepository := { x => false }
 
-packageOptions <+= (name, version, organization) map {
-  (title, version, vendor) =>
-    Package.ManifestAttributes(
-      "Created-By" -> "Scala Build Tool",
-      "Built-By" -> System.getProperty("user.name"),
-      "Build-Jdk" -> System.getProperty("java.version"),
-      "Specification-Title" -> title,
-      "Specification-Version" -> version,
-      "Specification-Vendor" -> vendor,
-      "Implementation-Title" -> title,
-      "Implementation-Version" -> version,
-      "Implementation-Vendor-Id" -> vendor,
-      "Implementation-Vendor" -> vendor
-    )
+packageOptions += {
+  val title = name.value
+  val ver = version.value
+  val vendor = organization.value
+
+  Package.ManifestAttributes(
+    "Created-By" -> "Scala Build Tool",
+    "Built-By" -> System.getProperty("user.name"),
+    "Build-Jdk" -> System.getProperty("java.version"),
+    "Specification-Title" -> title,
+    "Specification-Version" -> ver,
+    "Specification-Vendor" -> vendor,
+    "Implementation-Title" -> title,
+    "Implementation-Version" -> ver,
+    "Implementation-Vendor-Id" -> vendor,
+    "Implementation-Vendor" -> vendor
+  )
 }
 
 credentials ++= Seq(
@@ -53,26 +54,31 @@ pomIncludeRepository := { _ => false }
 
 releaseCrossBuild := true
 
-//releasePublishArtifactsAction := PgpKeys.publishSigned.value
+releasePublishArtifactsAction := PgpKeys.publishSigned.value
 
-pomExtra <<= (pomExtra, name, description) {(pom, name, desc) => pom ++ xml.Group(
-  <scm>
-    <url>http://github.com/shiplog/d2</url>
-    <connection>scm:git:git://github.com/shiplog/d2.git</connection>
-    <developerConnection>scm:git:git@github.com:shiplog/d2.git</developerConnection>
-  </scm>
-  <developers>
-    <developer>
-      <id>kareblak</id>
-      <name>Kåre Blakstad</name>
-    </developer>
-    <developer>
-      <id>teigen</id>
-      <name>Jon Anders Teigen</name>
-    </developer>
-    <developer>
-      <id>hamnis</id>
-      <name>Erlend Hamnaberg</name>
-    </developer>
-  </developers>
-)}
+scmInfo := Some(ScmInfo(
+  new URL("http://github.com/shiplog/d2"),
+  "scm:git:git://github.com/shiplog/d2.git",
+  Some("scm:git:git@github.com:shiplog/d2.git")
+))
+
+developers ++= List(
+  Developer(
+    "kareblak",
+    "Kåre Blakstad",
+    "",
+    null
+  ),
+  Developer(
+    "teigen",
+    "Jon Anders Teigen",
+    "",
+    null
+  ),
+  Developer(
+    "hamnis",
+    "Erlend Hamnaberg",
+    "erlend@hamnaberg.net",
+    new URL("http://twitter.com/hamnis")
+  )
+)
